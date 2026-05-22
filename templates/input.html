@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+  <h3>Enter number of Processes and Resources</h3>
+  <form method="post" class="row g-3">
+    <div class="col-md-6">
+      <label class="form-label">Processes (P)</label>
+      <input name="processes" type="number" class="form-control" min="1" required>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Resources (R)</label>
+      <input name="resources" type="number" class="form-control" min="1" required>
+    </div>
+    <div class="col-12">
+      <button class="btn btn-primary">Next → Build Matrices</button>
+    </div>
+  </form>
+{% endblock %}

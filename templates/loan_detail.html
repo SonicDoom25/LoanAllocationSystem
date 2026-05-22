@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head><title>Loan Detail</title></head>
+<body>
+  <h2>{{ loan['name'] }}</h2>
+  <p>Income: ₹{{ loan['income'] }}</p>
+  <p>Requested: ₹{{ loan['loan_amount'] }}</p>
+  <p>Approved: ₹{{ loan['approved_amount'] }}</p>
+  <p>Status: {{ loan['status'] }}</p>
+  <p>Reason: {{ loan['reason'] }}</p>
+  <p>Purpose: {{ loan['purpose'] }}</p>
+  <a href="{{ url_for('loan_requests') }}">Back</a>
+</body>
+</html>

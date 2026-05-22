@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-4">
+  <h3 class="mb-4">Loan Application</h3>
+
+  <form id="loanForm" class="row g-3 p-4 bg-light rounded shadow-sm">
+    <div class="col-md-6">
+      <label class="form-label">Full Name</label>
+      <input name="name" id="name" class="form-control" required>
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">Email</label>
+      <input name="email" id="email" type="email" class="form-control" required>
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">Phone</label>
+      <input name="phone" id="phone" class="form-control">
+    </div>
+
+    <div class="col-12">
+      <label class="form-label">Address</label>
+      <input name="address" id="address" class="form-control">
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Gender</label>
+      <select name="gender" id="gender" class="form-select">
+        <option>Male</option>
+        <option>Female</option>
+        <option>Other</option>
+      </select>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Loan Type</label>
+      <select name="loanType" id="loanType" class="form-select">
+        <option>Home Loan</option>
+        <option>Car Loan</option>
+        <option>Personal Loan</option>
+        <option>Education Loan</option>
+      </select>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Employment</label>
+      <select name="employment" id="employment" class="form-select">
+        <option>Salaried</option>
+        <option>Self-Employed</option>
+        <option>Student</option>
+        <option>Retired</option>
+      </select>
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">Monthly Income (₹)</label>
+      <input type="number" name="income" id="income" class="form-control" required>
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">Loan Amount (₹)</label>
+      <input type="number" name="amount" id="amount" class="form-control" required>
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">Repayment Period (months)</label>
+      <input type="number" name="tenure" id="tenure" class="form-control" required>
+    </div>
+
+    <div class="col-12">
+      <button type="submit" class="btn btn-primary w-100">Apply for Loan</button>
+    </div>
+  </form>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="resultModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Loan Analysis Result</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="resultMessage" class="mb-3"></div>
+        <div class="row">
+          <div class="col-md-8">
+            <canvas id="resultChart" height="200"></canvas>
+          </div>
+          <div class="col-md-4">
+            <ul class="list-group" id="resultSummary"></ul>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a id="viewHistoryLink" class="btn btn-secondary" href="{{ url_for('requests_page') }}">View Loan History</a>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+async function refreshHomeReserveBarIfOpen(){
+  // if on home page, call its refresh function; otherwise this will do nothing
+  if (window.refreshReserveBar) {
+    window.refreshReserveBar();
+  } else {
+    // we can fetch reserve/status and update any local display if needed
+  }
+}
+
+document.getElementById("loanForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const payload = {
+        name: document.getElementById("name").value,
+        email: document.getElementById("email").value,
+        phone: document.getElementById("phone").value,
+        address: document.getElementById("address").value,
+        gender: document.getElementById("gender").value,
+        loanType: document.getElementById("loanType").value,
+        employment: document.getElementById("employment").value,
+        income: Number(document.getElementById("income").value),
+        amount: Number(document.getElementById("amount").value),
+        tenure: Number(document.getElementById("tenure").value)
+    };
+
+    if (!payload.name || !payload.email || !payload.amount || !payload.income || !payload.tenure) {
+        alert("Please fill required fields.");
+        return;
+    }
+
+    try {
+        const resp = await fetch("/api/apply", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+        const data = await resp.json();
+        if (!data.ok) {
+            alert(data.error || "Server error");
+            return;
+        }
+
+        document.getElementById("resultMessage").innerHTML =
+            `<div class="alert ${data.status === 'Approved' ? 'alert-success' : 'alert-danger'}">${data.message}</div>`;
+
+        const summary = document.getElementById("resultSummary");
+        summary.innerHTML = "";
+        summary.insertAdjacentHTML("beforeend", `<li class="list-group-item">Status: <strong>${data.status}</strong></li>`);
+        summary.insertAdjacentHTML("beforeend", `<li class="list-group-item">Approved Amount: ₹${data.approvedAmount}</li>`);
+        summary.insertAdjacentHTML("beforeend", `<li class="list-group-item">Reserve (after): ₹${data.bank_reserve_after}</li>`);
+
+        const chartData = data.chart;
+        const allocations = chartData.allocations.map(a => a[0]);
+        const maxs = chartData.max.map(m => m[0]);
+        const labels = allocations.map((_, i) => `P${i+1}`);
+
+        if (window._resultChart) { window._resultChart.destroy(); }
+        const ctx = document.getElementById("resultChart").getContext("2d");
+        window._resultChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    { label: 'Allocated', data: allocations, backgroundColor: 'rgba(54,162,235,0.7)' },
+                    { label: 'Requested (Max)', data: maxs, backgroundColor: 'rgba(255,99,132,0.6)' }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: { y: { beginAtZero: true, title: { display: true, text: 'Amount (₹)' } } }
+            }
+        });
+
+        // show modal
+        const modal = new bootstrap.Modal(document.getElementById('resultModal'));
+        modal.show();
+
+        // refresh home reserve bar if present
+        await fetch('/reserve/status'); // ping
+        if (window.parent && window.parent.refreshReserveBar) {
+          window.parent.refreshReserveBar();
+        }
+        // Also call page-level function if available
+        if (typeof refreshReserveBar === 'function') refreshReserveBar();
+
+    } catch (err) {
+        console.error(err);
+        alert("Error analyzing loan. Check console.");
+    }
+});
+</script>
+{% endblock %}

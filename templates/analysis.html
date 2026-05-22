@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-4">
+  <h2 class="mb-3">System Analysis</h2>
+
+  <div class="row">
+    <div class="col-md-8">
+      <canvas id="financeChart" height="220"></canvas>
+    </div>
+    <div class="col-md-4">
+      <div class="card p-3">
+        <h5>Bank Reserve</h5>
+        <p>₹{{ bank_reserve }} (Default: ₹{{ bank_default }})</p>
+        <a href="{{ url_for('requests_page') }}" class="btn btn-sm btn-primary">View Loan History</a>
+      </div>
+    </div>
+  </div>
+
+  <hr class="my-4">
+
+  <h4 class="mt-4">Last Scenario: Resource Allocation</h4>
+  <canvas id="resourceChart" height="200"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const applicants = {{ applicants|tojson }};
+  const incomes = {{ incomes|tojson }};
+  const requested = {{ requested|tojson }};
+  const approved = {{ approved|tojson }};
+  const statuses = {{ statuses|tojson }};
+
+  // Chart: Requested vs Approved per applicant
+  const ctx = document.getElementById('financeChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: applicants,
+      datasets: [
+        { label: 'Requested', data: requested, backgroundColor: 'rgba(255,99,132,0.6)' },
+        { label: 'Approved', data: approved, backgroundColor: 'rgba(75,192,192,0.7)' }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: { y: { beginAtZero: true, title: { display: true, text: 'Amount (₹)' } } }
+    }
+  });
+
+  // Resource chart (last scenario)
+  const alloc = {{ allocation|tojson }};
+  const maxm = {{ maximum|tojson }};
+  const avail = {{ available|tojson }};
+
+  const allocVals = alloc.map(row => row[0] || 0);
+  const maxVals = maxm.map(row => row[0] || 0);
+  const labels = allocVals.map((_, i) => `P${i+1}`);
+
+  const ctx2 = document.getElementById('resourceChart').getContext('2d');
+  new Chart(ctx2, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [
+        { label: 'Allocated', data: allocVals, backgroundColor: 'rgba(54,162,235,0.7)' },
+        { label: 'Max', data: maxVals, backgroundColor: 'rgba(255,206,86,0.7)' }
+      ]
+    },
+    options: { responsive: true, scales: { y: { beginAtZero: true } } }
+  });
+</script>
+{% endblock %}

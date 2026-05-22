@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Loan Analysis Result</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="alert {% if status == 'Approved' %}alert-success{% else %}alert-danger{% endif %}">
+  {{ message|safe }}
+</div>
+
+  <h2>Loan Allocation Result</h2>
+  <p>Total Bank Funds: ₹{{ total_funds }}</p>
+  <p>Total Allocated: ₹{{ total_allocated }}</p>
+  <h3>System State: {{ 'SAFE ✅' if safe else 'UNSAFE ❌' }}</h3>
+
+  <canvas id="loanChart" width="400" height="200"></canvas>
+
+  <script>
+    const ctx = document.getElementById('loanChart');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: {{ loans | map(attribute='name') | list }},
+        datasets: [{
+          label: 'Approved Amount',
+          data: {{ loans | map(attribute='approved_amount') | list }},
+          borderWidth: 1
+        }]
+      }
+    });
+  </script>
+
+  <h3>Loan Details</h3>
+  <ul>
+    {% for loan in loans %}
+    <li>{{ loan['name'] }} - {{ loan['status'] }} ({{ loan['reason'] }})</li>
+    {% endfor %}
+  </ul>
+
+  <a href="{{ url_for('home') }}">🏠 Go Home</a>
+</body>
+</html>
