@@ -1,72 +1,238 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container py-4">
-  <h2 class="mb-3">System Analysis</h2>
 
-  <div class="row">
-    <div class="col-md-8">
-      <canvas id="financeChart" height="220"></canvas>
-    </div>
-    <div class="col-md-4">
-      <div class="card p-3">
-        <h5>Bank Reserve</h5>
-        <p>₹{{ bank_reserve }} (Default: ₹{{ bank_default }})</p>
-        <a href="{{ url_for('requests_page') }}" class="btn btn-sm btn-primary">View Loan History</a>
+<div class="mb-5 text-center">
+
+  <h1 class="hero-title mb-3">
+
+    System
+    <span class="gradient-text">
+      Analytics
+    </span>
+
+  </h1>
+
+  <p class="hero-subtitle">
+    Real-time reserve insights, allocation pressure
+    monitoring and financial resource analytics.
+  </p>
+
+</div>
+
+<div class="row g-4 mb-5">
+
+  <div class="col-md-4">
+
+    <div class="glass-card dashboard-card">
+
+      <div class="card-title-modern">
+        Current Reserve
       </div>
+
+      <div class="card-value text-success">
+        ₹{{ "{:,.0f}".format(bank_reserve) }}
+      </div>
+
     </div>
+
   </div>
 
-  <hr class="my-4">
+  <div class="col-md-4">
 
-  <h4 class="mt-4">Last Scenario: Resource Allocation</h4>
-  <canvas id="resourceChart" height="200"></canvas>
+    <div class="glass-card dashboard-card">
+
+      <div class="card-title-modern">
+        Total Applications
+      </div>
+
+      <div class="card-value">
+        {{ applicants|length }}
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="col-md-4">
+
+    <div class="glass-card dashboard-card">
+
+      <div class="card-title-modern">
+        System State
+      </div>
+
+      <div class="card-value text-primary">
+        SAFE
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<div class="row g-4">
+
+  <!-- Main Chart -->
+  <div class="col-lg-8">
+
+    <div class="glass-card p-4">
+
+      <h4 class="mb-4">
+
+        <i class="bi bi-bar-chart-fill"></i>
+        Requested vs Approved Loans
+
+      </h4>
+
+      <canvas id="financeChart"
+              height="140">
+      </canvas>
+
+    </div>
+
+  </div>
+
+  <!-- Side Panel -->
+  <div class="col-lg-4">
+
+    <div class="glass-card p-4 h-100">
+
+      <h4 class="mb-4">
+
+        <i class="bi bi-safe2-fill"></i>
+        Reserve Status
+
+      </h4>
+
+      <div class="mb-4">
+
+        <div class="d-flex justify-content-between">
+
+          <span>Reserve Capacity</span>
+
+          <strong>
+            ₹{{ "{:,.0f}".format(bank_reserve) }}
+          </strong>
+
+        </div>
+
+      </div>
+
+      <a href="{{ url_for('requests_page') }}"
+         class="btn btn-primary w-100">
+
+        View Loan History
+
+      </a>
+
+    </div>
+
+  </div>
+
+</div>
+
+<div class="glass-card p-4 mt-5">
+
+  <h4 class="mb-4">
+
+    <i class="bi bi-cpu-fill"></i>
+    Resource Allocation Analysis
+
+  </h4>
+
+  <canvas id="resourceChart"
+          height="120">
+  </canvas>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
-  const applicants = {{ applicants|tojson }};
-  const incomes = {{ incomes|tojson }};
-  const requested = {{ requested|tojson }};
-  const approved = {{ approved|tojson }};
-  const statuses = {{ statuses|tojson }};
 
-  // Chart: Requested vs Approved per applicant
-  const ctx = document.getElementById('financeChart').getContext('2d');
-  new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: applicants,
-      datasets: [
-        { label: 'Requested', data: requested, backgroundColor: 'rgba(255,99,132,0.6)' },
-        { label: 'Approved', data: approved, backgroundColor: 'rgba(75,192,192,0.7)' }
-      ]
-    },
-    options: {
-      responsive: true,
-      scales: { y: { beginAtZero: true, title: { display: true, text: 'Amount (₹)' } } }
-    }
-  });
+const applicants = {{ applicants|tojson }};
+const requested = {{ requested|tojson }};
+const approved = {{ approved|tojson }};
 
-  // Resource chart (last scenario)
-  const alloc = {{ allocation|tojson }};
-  const maxm = {{ maximum|tojson }};
-  const avail = {{ available|tojson }};
+const ctx =
+document.getElementById('financeChart');
 
-  const allocVals = alloc.map(row => row[0] || 0);
-  const maxVals = maxm.map(row => row[0] || 0);
-  const labels = allocVals.map((_, i) => `P${i+1}`);
+new Chart(ctx, {
 
-  const ctx2 = document.getElementById('resourceChart').getContext('2d');
-  new Chart(ctx2, {
-    type: 'bar',
-    data: {
-      labels: labels,
-      datasets: [
-        { label: 'Allocated', data: allocVals, backgroundColor: 'rgba(54,162,235,0.7)' },
-        { label: 'Max', data: maxVals, backgroundColor: 'rgba(255,206,86,0.7)' }
-      ]
-    },
-    options: { responsive: true, scales: { y: { beginAtZero: true } } }
-  });
+  type: 'bar',
+
+  data: {
+
+    labels: applicants,
+
+    datasets: [
+
+      {
+        label: 'Requested',
+        data: requested
+      },
+
+      {
+        label: 'Approved',
+        data: approved
+      }
+
+    ]
+
+  },
+
+  options: {
+    responsive: true
+  }
+
+});
+
+const alloc = {{ allocation|tojson }};
+const maxm = {{ maximum|tojson }};
+
+const allocVals =
+alloc.map(row => row[0] || 0);
+
+const maxVals =
+maxm.map(row => row[0] || 0);
+
+const labels =
+allocVals.map((_, i) => `P${i+1}`);
+
+const ctx2 =
+document.getElementById('resourceChart');
+
+new Chart(ctx2, {
+
+  type: 'line',
+
+  data: {
+
+    labels: labels,
+
+    datasets: [
+
+      {
+        label: 'Allocated',
+        data: allocVals
+      },
+
+      {
+        label: 'Maximum',
+        data: maxVals
+      }
+
+    ]
+
+  },
+
+  options: {
+    responsive: true
+  }
+
+});
+
 </script>
+
 {% endblock %}

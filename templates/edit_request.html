@@ -1,76 +1,152 @@
 {% extends "base.html" %}
 {% block content %}
-  <h3>Edit Request #{{ r.id }}</h3>
-  <form method="post">
-    <input type="hidden" name="processes" value="{{ r.processes }}">
-    <input type="hidden" name="resources" value="{{ r.resources }}">
 
-    <div class="mb-2">
-      <label class="form-label">Name</label>
-      <input name="applicantName" class="form-control" value="{{ r.applicantName }}">
+<div class="mb-5">
+
+  <h1 class="hero-title mb-3">
+
+    Edit
+    <span class="gradient-text">
+      Request
+    </span>
+
+  </h1>
+
+  <p class="hero-subtitle">
+    Modify applicant and allocation details.
+  </p>
+
+</div>
+
+<form method="post">
+
+<div class="glass-card p-5">
+
+  <div class="row g-4">
+
+    <div class="col-md-6">
+
+      <label class="form-label">
+        Applicant Name
+      </label>
+
+      <input name="applicantName"
+             class="form-control"
+             value="{{ r.applicantName }}">
+
     </div>
-    <div class="mb-2">
-      <label class="form-label">Email</label>
-      <input name="email" class="form-control" value="{{ r.email }}">
+
+    <div class="col-md-6">
+
+      <label class="form-label">
+        Email
+      </label>
+
+      <input name="email"
+             class="form-control"
+             value="{{ r.email }}">
+
     </div>
-    <div class="mb-2">
-      <label class="form-label">Loan Amount</label>
-      <input name="loanAmount" type="number" class="form-control" value="{{ r.loanAmount }}">
+
+    <div class="col-md-6">
+
+      <label class="form-label">
+        Requested Amount
+      </label>
+
+      <input type="number"
+             name="requestedAmount"
+             class="form-control"
+             value="{{ r.requestedAmount }}">
+
     </div>
-    <div class="mb-2">
-      <label class="form-label">Status</label>
-      <select name="status" class="form-select">
-        <option {% if r.status=='Pending' %} selected {% endif %}>Pending</option>
-        <option {% if r.status=='Allocated' %} selected {% endif %}>Allocated</option>
-        <option {% if r.status=='Not Allocated' %} selected {% endif %}>Not Allocated</option>
-        <option {% if r.status=='Approved' %} selected {% endif %}>Approved</option>
-        <option {% if r.status=='Rejected' %} selected {% endif %}>Rejected</option>
+
+    <div class="col-md-6">
+
+      <label class="form-label">
+        Approved Amount
+      </label>
+
+      <input type="number"
+             name="approvedAmount"
+             class="form-control"
+             value="{{ r.approvedAmount }}">
+
+    </div>
+
+    <div class="col-md-6">
+
+      <label class="form-label">
+        Monthly Income
+      </label>
+
+      <input type="number"
+             name="income"
+             class="form-control"
+             value="{{ r.income }}">
+
+    </div>
+
+    <div class="col-md-6">
+
+      <label class="form-label">
+        Repayment Months
+      </label>
+
+      <input type="number"
+             name="months"
+             class="form-control"
+             value="{{ r.months }}">
+
+    </div>
+
+    <div class="col-md-6">
+
+      <label class="form-label">
+        Status
+      </label>
+
+      <select name="status"
+              class="form-select">
+
+        <option {% if r.status=='Pending' %}selected{% endif %}>
+          Pending
+        </option>
+
+        <option {% if r.status=='Approved' %}selected{% endif %}>
+          Approved
+        </option>
+
+        <option {% if r.status=='Rejected' %}selected{% endif %}>
+          Rejected
+        </option>
+
       </select>
+
     </div>
 
-    <h5 class="mt-3">Available</h5>
-    <div class="mb-2">
-      {% for j in range(r.resources) %}
-        <div class="col-md-2 d-inline-block me-2">
-          <label class="form-label">R{{ j+1 }}</label>
-          <input name="avail_{{j}}" class="form-control" value="{{ r.available[j] if r.available|length>j else 0 }}">
-        </div>
-      {% endfor %}
-    </div>
+  </div>
 
-    <h5 class="mt-3">Allocation</h5>
-    <table class="table table-sm">
-      <thead><tr><th>Process</th>{% for j in range(r.resources) %}<th>R{{j+1}}</th>{% endfor %}</tr></thead>
-      <tbody>
-        {% for i in range(r.processes) %}
-          <tr>
-            <td>P{{ i+1 }}</td>
-            {% for j in range(r.resources) %}
-              <td><input name="alloc_{{i}}_{{j}}" class="form-control form-control-sm" value="{{ r.allocation[i][j] if r.allocation|length>i and r.allocation[i]|length>j else 0 }}"></td>
-            {% endfor %}
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <div class="d-flex gap-3 mt-5">
 
-    <h5 class="mt-3">Max</h5>
-    <table class="table table-sm">
-      <thead><tr><th>Process</th>{% for j in range(r.resources) %}<th>R{{j+1}}</th>{% endfor %}</tr></thead>
-      <tbody>
-        {% for i in range(r.processes) %}
-          <tr>
-            <td>P{{ i+1 }}</td>
-            {% for j in range(r.resources) %}
-              <td><input name="max_{{i}}_{{j}}" class="form-control form-control-sm" value="{{ r.max[i][j] if r.max|length>i and r.max[i]|length>j else 0 }}"></td>
-            {% endfor %}
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <button class="btn btn-primary">
 
-    <div class="mt-2">
-      <button class="btn btn-primary">Save Changes</button>
-      <a class="btn btn-secondary" href="{{ url_for('view_request', id_=r.id) }}">Cancel</a>
-    </div>
-  </form>
+      <i class="bi bi-check-circle-fill"></i>
+      Save Changes
+
+    </button>
+
+    <a class="btn btn-outline-light"
+       href="{{ url_for('view_request', id_=r.id) }}">
+
+      Cancel
+
+    </a>
+
+  </div>
+
+</div>
+
+</form>
+
 {% endblock %}

@@ -1,74 +1,200 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Loan Allocation — Banker's</title>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
 
-    <!-- Bootstrap CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  </head>
-  <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-      <div class="container">
-        <a class="navbar-brand" href="{{ url_for('home') }}">LoanAllocation</a>
-        <div class="collapse navbar-collapse">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('loan_application') }}">Apply</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('requests_page') }}">Requests</a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+  <title>AegisFund AI</title>
 
-    <!-- Bank Reserve Progress Bar -->
-    <div class="container mt-3">
-      <div class="card shadow-sm border-0">
-        <div class="card-body">
-          <h6 class="card-title mb-2">Bank Reserve Progress</h6>
-          {% set reserve = bank_reserve or 0 %}
-          {% set reserve_default = bank_reserve_default or 500000 %}
-          {% set percentage = (reserve / reserve_default * 100) if reserve_default else 0 %}
-          <div class="progress" style="height: 25px;">
-            <div class="progress-bar bg-success" role="progressbar"
-                 style="width: {{ percentage }}%;"
-                 aria-valuenow="{{ percentage }}" aria-valuemin="0"
-                 aria-valuemax="100">
-              {{ "%.1f"|format(percentage) }}%
-            </div>
-          </div>
-          <div class="d-flex justify-content-between align-items-center mt-2">
-            <small>Remaining Reserve: ₹{{ "{:,.2f}".format(reserve) }}</small>
-            <form method="POST" action="{{ url_for('reserve_reset') }}" class="m-0">
-              <button class="btn btn-sm btn-outline-danger">Reset</button>
-            </form>
-          </div>
-        </div>
-      </div>
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Inter Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+<!-- Background Glow -->
+<div class="bg-glow glow-1"></div>
+<div class="bg-glow glow-2"></div>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
+  <div class="container">
+
+    <a class="navbar-brand fw-bold logo-text"
+       href="{{ url_for('home') }}">
+
+      <i class="bi bi-bank2"></i>
+      AegisFund AI
+    </a>
+
+    <button class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav">
+
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse"
+         id="navbarNav">
+
+      <ul class="navbar-nav ms-auto">
+
+        <li class="nav-item">
+          <a class="nav-link"
+             href="{{ url_for('home') }}">
+
+            <i class="bi bi-grid-1x2-fill"></i>
+            Dashboard
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link"
+             href="{{ url_for('loan_application') }}">
+
+            <i class="bi bi-cash-stack"></i>
+            Apply
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link"
+             href="{{ url_for('requests_page') }}">
+
+            <i class="bi bi-clock-history"></i>
+            Requests
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link"
+             href="{{ url_for('analysis') }}">
+
+            <i class="bi bi-bar-chart-line-fill"></i>
+            Analytics
+          </a>
+        </li>
+
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+<!-- Reserve Progress -->
+<div class="container mt-4">
+
+  <div class="glass-card reserve-card">
+
+    <div class="d-flex justify-content-between align-items-center mb-2">
+
+      <h6 class="text-light mb-0">
+        <i class="bi bi-safe2-fill"></i>
+        Bank Reserve
+      </h6>
+
+      <span class="reserve-badge">
+        Live
+      </span>
+
     </div>
 
-    <!-- Main Content -->
-    <main class="container my-4">
-      {% with messages = get_flashed_messages() %}
-        {% if messages %}
-          <div>
-            {% for m in messages %}
-              <div class="alert alert-info">{{ m }}</div>
-            {% endfor %}
-          </div>
-        {% endif %}
-      {% endwith %}
-      {% block content %}{% endblock %}
-    </main>
+    {% set reserve = bank_reserve or 0 %}
+    {% set reserve_default = bank_reserve_default or 500000 %}
+    {% set percentage = (reserve / reserve_default * 100) if reserve_default else 0 %}
 
-    <footer class="text-center text-muted py-3">
-      Converted from Android — Flask demo
-    </footer>
+    <div class="progress custom-progress">
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  </body>
+      <div class="progress-bar custom-progress-bar"
+           role="progressbar"
+           style="width: {{ percentage }}%;">
+
+        {{ "%.1f"|format(percentage) }}%
+
+      </div>
+
+    </div>
+
+    <div class="d-flex justify-content-between mt-2 align-items-center">
+
+      <small class="text-muted-light">
+        Remaining Reserve:
+        ₹{{ "{:,.2f}".format(reserve) }}
+      </small>
+
+      <form method="POST"
+            action="{{ url_for('reserve_reset') }}">
+
+        <button class="btn btn-sm btn-outline-danger rounded-pill px-3">
+          Reset
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Main -->
+<main class="container py-4">
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for m in messages %}
+        <div class="custom-alert mb-3">
+          {{ m }}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+
+</main>
+
+<!-- Footer -->
+<footer class="footer-section">
+
+  <div class="container text-center">
+
+    <h6 class="footer-logo">
+      AegisFund AI
+    </h6>
+
+    <p class="footer-text">
+      Intelligent Loan Allocation & Risk Analytics Platform
+    </p>
+
+    <small class="footer-copy">
+      Flask • SQLite • Chart.js • Banker's Algorithm
+    </small>
+
+  </div>
+
+</footer>
+
+<!-- Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- ChartJS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Custom JS -->
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+</body>
 </html>

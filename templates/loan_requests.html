@@ -1,36 +1,224 @@
 {% extends "base.html" %}
 {% block content %}
-  <div class="d-flex justify-content-between align-items-center">
-    <h3>Saved Loan Requests</h3>
-    <form method="post" action="{{ url_for('delete_all') }}" onsubmit="return confirm('Delete ALL?');">
-      <button class="btn btn-danger btn-sm">Delete All Loan Requests</button>
-    </form>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+  <div>
+
+    <h1 class="hero-title mb-2">
+      Loan
+      <span class="gradient-text">
+        Requests
+      </span>
+    </h1>
+
+    <p class="text-muted-light">
+      Monitor and manage all allocation workflows.
+    </p>
+
   </div>
 
-  {% if requests %}
-    <table class="table table-striped mt-3">
-      <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Requested</th><th>Approved</th><th>Status</th><th>Actions</th></tr></thead>
+  <form method="post"
+        action="{{ url_for('delete_all') }}"
+        onsubmit="return confirm('Delete ALL loan records?');">
+
+    <button class="btn btn-danger">
+
+      <i class="bi bi-trash3-fill"></i>
+      Delete All
+
+    </button>
+
+  </form>
+
+</div>
+
+{% if requests %}
+
+<div class="row g-4 mb-4">
+
+  <div class="col-md-4">
+    <div class="glass-card dashboard-card">
+
+      <div class="card-title-modern">
+        Total Requests
+      </div>
+
+      <div class="card-value">
+        {{ requests|length }}
+      </div>
+
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="glass-card dashboard-card">
+
+      <div class="card-title-modern">
+        Approved Loans
+      </div>
+
+      <div class="card-value text-success">
+        {{
+          requests
+          | selectattr("status","equalto","Approved")
+          | list
+          | length
+        }}
+      </div>
+
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="glass-card dashboard-card">
+
+      <div class="card-title-modern">
+        Rejected Loans
+      </div>
+
+      <div class="card-value text-danger">
+        {{
+          requests
+          | selectattr("status","equalto","Rejected")
+          | list
+          | length
+        }}
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<div class="glass-card p-4">
+
+  <div class="table-responsive">
+
+    <table class="table align-middle">
+
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Applicant</th>
+          <th>Email</th>
+          <th>Requested</th>
+          <th>Approved</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
       <tbody>
+
         {% for r in requests %}
-          <tr>
-            <td>{{ r.id }}</td>
-            <td>{{ r.applicantName or '-' }}</td>
-            <td>{{ r.email or '-' }}</td>
-            <td>₹{{ r.requestedAmount }}</td>
-            <td>₹{{ r.approvedAmount }}</td>
-            <td>{{ r.status }}</td>
-            <td>
-              <a class="btn btn-sm btn-primary" href="{{ url_for('view_request', id_=r.id) }}">View</a>
-              <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('edit_request', id_=r.id) }}">Edit</a>
-              <form method="post" action="{{ url_for('delete_request', id_=r.id) }}" style="display:inline" onsubmit="return confirm('Delete this?');">
-                <button class="btn btn-sm btn-danger">Delete</button>
+
+        <tr>
+
+          <td>#{{ r.id }}</td>
+
+          <td>
+            <strong>
+              {{ r.applicantName or '-' }}
+            </strong>
+          </td>
+
+          <td>
+            {{ r.email or '-' }}
+          </td>
+
+          <td>
+            ₹{{ "{:,.0f}".format(r.requestedAmount) }}
+          </td>
+
+          <td>
+            ₹{{ "{:,.0f}".format(r.approvedAmount) }}
+          </td>
+
+          <td>
+
+            {% if r.status == "Approved" %}
+
+              <span class="badge bg-success">
+                Approved
+              </span>
+
+            {% elif r.status == "Rejected" %}
+
+              <span class="badge bg-danger">
+                Rejected
+              </span>
+
+            {% else %}
+
+              <span class="badge bg-secondary">
+                {{ r.status }}
+              </span>
+
+            {% endif %}
+
+          </td>
+
+          <td>
+
+            <div class="d-flex gap-2">
+
+              <a class="btn btn-sm btn-primary"
+                 href="{{ url_for('view_request', id_=r.id) }}">
+
+                <i class="bi bi-eye-fill"></i>
+              </a>
+
+              <a class="btn btn-sm btn-outline-light"
+                 href="{{ url_for('edit_request', id_=r.id) }}">
+
+                <i class="bi bi-pencil-fill"></i>
+              </a>
+
+              <form method="post"
+                    action="{{ url_for('delete_request', id_=r.id) }}"
+                    onsubmit="return confirm('Delete request?');">
+
+                <button class="btn btn-sm btn-danger">
+
+                  <i class="bi bi-trash-fill"></i>
+
+                </button>
+
               </form>
-            </td>
-          </tr>
+
+            </div>
+
+          </td>
+
+        </tr>
+
         {% endfor %}
+
       </tbody>
+
     </table>
-  {% else %}
-    <p class="mt-3">No requests saved yet.</p>
-  {% endif %}
+
+  </div>
+
+</div>
+
+{% else %}
+
+<div class="glass-card p-5 text-center">
+
+  <i class="bi bi-inbox display-3 text-muted"></i>
+
+  <h3 class="mt-4">
+    No Loan Requests Yet
+  </h3>
+
+  <p class="text-muted-light">
+    Loan requests will appear here after submissions.
+  </p>
+
+</div>
+
+{% endif %}
+
 {% endblock %}

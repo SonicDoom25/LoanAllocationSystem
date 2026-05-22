@@ -1,70 +1,271 @@
 {% extends "base.html" %}
 {% block content %}
-  <h3>Enter Matrices & Applicant Info</h3>
 
-  <form method="post">
-    <input type="hidden" name="processes" value="{{ processes }}">
-    <input type="hidden" name="resources" value="{{ resources }}">
-    {% if scenario_id and scenario_id != -1 %}
-      <input type="hidden" name="scenarioId" value="{{ scenario_id }}">
-    {% endif %}
+<div class="mb-5 text-center">
 
-    <div class="mb-3">
-      <label class="form-label">Applicant Name</label>
-      <input name="applicantName" class="form-control" value="{{ loaded.applicantName if loaded else '' }}">
-    </div>
-    <div class="mb-3">
-      <label class="form-label">Email</label>
-      <input name="email" class="form-control" value="{{ loaded.email if loaded else '' }}">
-    </div>
-    <div class="mb-3">
-      <label class="form-label">Requested Loan Amount</label>
-      <input name="loanAmount" type="number" class="form-control" value="{{ loaded.loanAmount if loaded else 0 }}">
+  <h1 class="hero-title mb-3">
+
+    Matrix
+    <span class="gradient-text">
+      Configuration
+    </span>
+
+  </h1>
+
+  <p class="hero-subtitle">
+    Configure allocation matrices and resource vectors
+    for safe-state analysis using Banker's Algorithm.
+  </p>
+
+</div>
+
+<form method="post">
+
+  <input type="hidden"
+         name="processes"
+         value="{{ processes }}">
+
+  <input type="hidden"
+         name="resources"
+         value="{{ resources }}">
+
+  {% if scenario_id and scenario_id != -1 %}
+
+    <input type="hidden"
+           name="scenarioId"
+           value="{{ scenario_id }}">
+
+  {% endif %}
+
+  <!-- Applicant Section -->
+  <div class="glass-card p-5 mb-5">
+
+    <h4 class="mb-4">
+
+      <i class="bi bi-person-vcard-fill"></i>
+      Applicant Information
+
+    </h4>
+
+    <div class="row g-4">
+
+      <div class="col-md-4">
+
+        <label class="form-label">
+          Applicant Name
+        </label>
+
+        <input name="applicantName"
+               class="form-control"
+               value="{{ loaded.applicantName if loaded else '' }}">
+
+      </div>
+
+      <div class="col-md-4">
+
+        <label class="form-label">
+          Email Address
+        </label>
+
+        <input name="email"
+               class="form-control"
+               value="{{ loaded.email if loaded else '' }}">
+
+      </div>
+
+      <div class="col-md-4">
+
+        <label class="form-label">
+          Requested Loan Amount
+        </label>
+
+        <input name="loanAmount"
+               type="number"
+               class="form-control"
+               value="{{ loaded.loanAmount if loaded else 0 }}">
+
+      </div>
+
     </div>
 
-    <h5>Available Resources</h5>
-    <div class="mb-3">
+  </div>
+
+  <!-- Available Resources -->
+  <div class="glass-card p-5 mb-5">
+
+    <h4 class="mb-4">
+
+      <i class="bi bi-hdd-network-fill"></i>
+      Available Resources
+
+    </h4>
+
+    <div class="row g-4">
+
       {% for j in range(resources) %}
-        <div class="col-md-2 d-inline-block me-2">
-          <label class="form-label">R{{ j+1 }}</label>
-          <input name="avail_{{j}}" class="form-control" value="{{ loaded.available[j] if loaded and loaded.available|length>j else 0 }}">
-        </div>
+
+      <div class="col-md-2">
+
+        <label class="form-label">
+          R{{ j+1 }}
+        </label>
+
+        <input name="avail_{{j}}"
+               class="form-control"
+               value="{{ loaded.available[j] if loaded and loaded.available|length>j else 0 }}">
+
+      </div>
+
       {% endfor %}
+
     </div>
 
-    <h5>Allocation Matrix</h5>
-    <table class="table table-sm">
-      <thead><tr><th>Process</th>{% for j in range(resources) %}<th>R{{j+1}}</th>{% endfor %}</tr></thead>
-      <tbody>
-        {% for i in range(processes) %}
-          <tr>
-            <td>P{{ i+1 }}</td>
-            {% for j in range(resources) %}
-              <td><input name="alloc_{{i}}_{{j}}" class="form-control form-control-sm" value="{{ loaded.allocation[i][j] if loaded and loaded.allocation|length>i and loaded.allocation[i]|length>j else 0 }}"></td>
-            {% endfor %}
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  </div>
 
-    <h5>Max Matrix</h5>
-    <table class="table table-sm">
-      <thead><tr><th>Process</th>{% for j in range(resources) %}<th>R{{j+1}}</th>{% endfor %}</tr></thead>
-      <tbody>
-        {% for i in range(processes) %}
-          <tr>
-            <td>P{{ i+1 }}</td>
-            {% for j in range(resources) %}
-              <td><input name="max_{{i}}_{{j}}" class="form-control form-control-sm" value="{{ loaded.max[i][j] if loaded and loaded.max|length>i and loaded.max[i]|length>j else 0 }}"></td>
-            {% endfor %}
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <!-- Allocation Matrix -->
+  <div class="glass-card p-5 mb-5">
 
-    <div class="mt-2">
-      <button class="btn btn-primary" type="submit">Save Scenario</button>
-      <a class="btn btn-secondary" href="{{ url_for('home') }}">Cancel</a>
+    <h4 class="mb-4">
+
+      <i class="bi bi-grid-3x3-gap-fill"></i>
+      Allocation Matrix
+
+    </h4>
+
+    <div class="table-responsive">
+
+      <table class="table align-middle">
+
+        <thead>
+
+          <tr>
+
+            <th>Process</th>
+
+            {% for j in range(resources) %}
+              <th>R{{j+1}}</th>
+            {% endfor %}
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          {% for i in range(processes) %}
+
+          <tr>
+
+            <td>
+              <strong>P{{ i+1 }}</strong>
+            </td>
+
+            {% for j in range(resources) %}
+
+            <td>
+
+              <input name="alloc_{{i}}_{{j}}"
+                     class="form-control form-control-sm"
+                     value="{{ loaded.allocation[i][j] if loaded and loaded.allocation|length>i and loaded.allocation[i]|length>j else 0 }}">
+
+            </td>
+
+            {% endfor %}
+
+          </tr>
+
+          {% endfor %}
+
+        </tbody>
+
+      </table>
+
     </div>
-  </form>
+
+  </div>
+
+  <!-- Maximum Matrix -->
+  <div class="glass-card p-5 mb-5">
+
+    <h4 class="mb-4">
+
+      <i class="bi bi-diagram-3-fill"></i>
+      Maximum Demand Matrix
+
+    </h4>
+
+    <div class="table-responsive">
+
+      <table class="table align-middle">
+
+        <thead>
+
+          <tr>
+
+            <th>Process</th>
+
+            {% for j in range(resources) %}
+              <th>R{{j+1}}</th>
+            {% endfor %}
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          {% for i in range(processes) %}
+
+          <tr>
+
+            <td>
+              <strong>P{{ i+1 }}</strong>
+            </td>
+
+            {% for j in range(resources) %}
+
+            <td>
+
+              <input name="max_{{i}}_{{j}}"
+                     class="form-control form-control-sm"
+                     value="{{ loaded.max[i][j] if loaded and loaded.max|length>i and loaded.max[i]|length>j else 0 }}">
+
+            </td>
+
+            {% endfor %}
+
+          </tr>
+
+          {% endfor %}
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+  <!-- Buttons -->
+  <div class="d-flex justify-content-center gap-3">
+
+    <button class="btn btn-primary btn-lg"
+            type="submit">
+
+      <i class="bi bi-check-circle-fill"></i>
+      Save Scenario
+
+    </button>
+
+    <a class="btn btn-outline-light btn-lg"
+       href="{{ url_for('home') }}">
+
+      Cancel
+
+    </a>
+
+  </div>
+
+</form>
+
 {% endblock %}

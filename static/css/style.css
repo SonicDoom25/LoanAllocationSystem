@@ -1,3 +1,272 @@
-body { background: #f6f8fb; }
-.container { max-width: 1000px; }
-pre { background:#fff; padding:10px; border-radius:6px; }
+:root{
+    --bg:#020617;
+    --bg2:#0f172a;
+    --card:#111827;
+    --primary:#3b82f6;
+    --primary2:#2563eb;
+    --success:#10b981;
+    --danger:#ef4444;
+    --warning:#f59e0b;
+    --text:#f8fafc;
+    --muted:#94a3b8;
+    --border:rgba(255,255,255,0.08);
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:
+        linear-gradient(135deg,#020617,#0f172a,#111827);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    overflow-x:hidden;
+    position:relative;
+}
+
+/* Background Glow */
+.bg-glow{
+    position:fixed;
+    border-radius:50%;
+    filter:blur(120px);
+    z-index:-1;
+}
+
+.glow-1{
+    width:320px;
+    height:320px;
+    background:#2563eb;
+    top:-100px;
+    left:-100px;
+    opacity:0.25;
+}
+
+.glow-2{
+    width:320px;
+    height:320px;
+    background:#7c3aed;
+    bottom:-120px;
+    right:-100px;
+    opacity:0.18;
+}
+
+/* Navbar */
+.custom-navbar{
+    background:rgba(15,23,42,0.72);
+    backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--border);
+    padding:14px 0;
+}
+
+.logo-text{
+    font-size:1.25rem;
+    letter-spacing:0.5px;
+}
+
+.nav-link{
+    color:var(--muted) !important;
+    margin-left:14px;
+    transition:0.3s;
+    font-weight:500;
+}
+
+.nav-link:hover{
+    color:white !important;
+    transform:translateY(-2px);
+}
+
+/* Glass Cards */
+.glass-card{
+    background:rgba(17,24,39,0.7);
+    backdrop-filter:blur(18px);
+    border:1px solid rgba(255,255,255,0.06);
+    border-radius:24px;
+    box-shadow:
+        0 10px 30px rgba(0,0,0,0.35);
+}
+
+/* Reserve Card */
+.reserve-card{
+    padding:24px;
+}
+
+.reserve-badge{
+    background:rgba(16,185,129,0.12);
+    color:#34d399;
+    padding:7px 14px;
+    border-radius:999px;
+    border:1px solid rgba(16,185,129,0.25);
+    font-size:0.8rem;
+}
+
+.custom-progress{
+    height:20px;
+    background:#1e293b;
+    border-radius:999px;
+    overflow:hidden;
+}
+
+.custom-progress-bar{
+    background:
+        linear-gradient(90deg,#3b82f6,#8b5cf6);
+    font-weight:600;
+}
+
+/* Hero */
+.hero-title{
+    font-size:3.2rem;
+    font-weight:800;
+    line-height:1.1;
+}
+
+.gradient-text{
+    background:
+        linear-gradient(90deg,#60a5fa,#a78bfa);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.hero-subtitle{
+    color:#cbd5e1;
+    font-size:1.1rem;
+    max-width:760px;
+    margin:auto;
+}
+
+/* Dashboard Cards */
+.dashboard-card{
+    padding:24px;
+    transition:0.35s;
+    height:100%;
+}
+
+.dashboard-card:hover{
+    transform:translateY(-6px);
+    box-shadow:0 18px 40px rgba(0,0,0,0.4);
+}
+
+.card-title-modern{
+    color:#cbd5e1;
+    font-size:0.95rem;
+    margin-bottom:10px;
+}
+
+.card-value{
+    font-size:2rem;
+    font-weight:700;
+}
+
+.card-icon{
+    font-size:2rem;
+}
+
+/* Buttons */
+.btn-primary{
+    background:
+        linear-gradient(90deg,#2563eb,#3b82f6);
+    border:none;
+    border-radius:14px;
+    padding:12px 22px;
+    font-weight:600;
+    transition:0.3s;
+}
+
+.btn-primary:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 24px rgba(37,99,235,0.35);
+}
+
+.btn-success,
+.btn-secondary{
+    border-radius:14px;
+}
+
+/* Alerts */
+.custom-alert{
+    background:rgba(59,130,246,0.12);
+    border:1px solid rgba(59,130,246,0.25);
+    color:#dbeafe;
+    border-radius:16px;
+    padding:14px 18px;
+}
+
+/* Forms */
+.form-control,
+.form-select{
+    background:#0f172a;
+    border:1px solid rgba(255,255,255,0.08);
+    color:white;
+    border-radius:14px;
+    padding:12px;
+}
+
+.form-control:focus,
+.form-select:focus{
+    background:#0f172a;
+    color:white;
+    border-color:#3b82f6;
+    box-shadow:0 0 0 0.2rem rgba(59,130,246,0.25);
+}
+
+.form-label{
+    color:#cbd5e1;
+    font-weight:500;
+}
+
+.text-muted-light{
+    color:#cbd5e1;
+}
+
+/* Tables */
+.table{
+    color:white;
+}
+
+.table thead{
+    background:#1e293b;
+}
+
+.table tbody tr{
+    transition:0.2s;
+}
+
+.table tbody tr:hover{
+    background:rgba(255,255,255,0.03);
+}
+
+/* Footer */
+.footer-section{
+    margin-top:80px;
+    border-top:1px solid rgba(255,255,255,0.08);
+    padding:40px 0;
+}
+
+.footer-logo{
+    font-size:1.2rem;
+    font-weight:700;
+}
+
+.footer-text{
+    color:#cbd5e1;
+}
+
+.footer-copy{
+    color:#94a3b8;
+}
+
+/* Responsive */
+@media(max-width:768px){
+
+    .hero-title{
+        font-size:2.2rem;
+    }
+
+    .card-value{
+        font-size:1.6rem;
+    }
+
+}

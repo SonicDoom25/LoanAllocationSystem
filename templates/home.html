@@ -1,72 +1,137 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container py-4">
-  <div class="text-center mb-4">
-    <h1>Loan Allocation System (Banker's Algorithm)</h1>
-    <p class="lead">Instant analysis, persistent bank reserve and history</p>
-  </div>
 
-  <div class="row align-items-center mb-3">
-    <div class="col-md-8">
-      <label class="form-label">Bank Reserve</label>
-      <div class="progress" style="height: 28px;">
-        <div id="reserveBar" class="progress-bar" role="progressbar"
-             style="width: 100%;">
-          ₹{{ bank_reserve }}
-        </div>
-      </div>
-      <small id="reserveText" class="text-muted">Remaining: ₹{{ bank_reserve }} / ₹{{ bank_reserve_default }}</small>
-    </div>
-    <div class="col-md-4 text-end">
-      <button id="resetReserveBtn" class="btn btn-outline-danger">Reset Bank Reserve</button>
-    </div>
-  </div>
+<div class="text-center mb-5">
 
-  <div class="d-flex gap-2 justify-content-center mb-4">
-    <a class="btn btn-primary" href="{{ url_for('loan_application') }}">Apply for Loan</a>
-    <a class="btn btn-secondary" href="{{ url_for('requests_page') }}">Loan History</a>
-    <a class="btn btn-success" href="{{ url_for('analysis') }}">View System Analysis</a>
-  </div>
+  <h1 class="hero-title mb-3">
+    Intelligent
+    <span class="gradient-text">
+      Loan Allocation
+    </span>
+    Platform
+  </h1>
+
+  <p class="hero-subtitle">
+    AI-powered reserve management and safe-state
+    banking allocation using Banker's Algorithm,
+    analytics and real-time financial simulations.
+  </p>
+
 </div>
 
-<script>
-async function refreshReserveBar(){
-  try {
-    const resp = await fetch('/reserve/status');
-    const d = await resp.json();
-    const bar = document.getElementById('reserveBar');
-    const txt = document.getElementById('reserveText');
-    bar.style.width = (d.percent > 100 ? 100 : d.percent) + '%';
-    bar.innerText = '₹' + d.reserve.toLocaleString();
-    txt.innerText = `Remaining: ₹${d.reserve.toLocaleString()} / ₹${d.default.toLocaleString()}`;
-    if (d.percent < 25) {
-      bar.classList.remove('bg-success');
-      bar.classList.add('bg-danger');
-    } else if (d.percent < 60) {
-      bar.classList.remove('bg-success');
-      bar.classList.add('bg-warning');
-    } else {
-      bar.classList.remove('bg-warning', 'bg-danger');
-      bar.classList.add('bg-success');
-    }
-  } catch (e) {
-    console.error(e);
-  }
-}
+<div class="row g-4 mb-5">
 
-document.getElementById('resetReserveBtn').addEventListener('click', async () => {
-  if (!confirm('Reset bank reserve to ₹500,000?')) return;
-  const resp = await fetch('/reserve/reset', {method: 'POST'});
-  const d = await resp.json();
-  if (d.ok) {
-    await refreshReserveBar();
-    alert('Bank reserve reset.');
-  } else {
-    alert('Could not reset reserve.');
-  }
-});
+  <div class="col-md-4">
+    <div class="glass-card dashboard-card">
 
-// refresh on load
-refreshReserveBar();
-</script>
+      <div class="d-flex justify-content-between align-items-center">
+
+        <div>
+          <div class="card-title-modern">
+            Bank Reserve
+          </div>
+
+          <div class="card-value">
+            ₹{{ "{:,.0f}".format(bank_reserve) }}
+          </div>
+        </div>
+
+        <div class="card-icon text-primary">
+          <i class="bi bi-bank2"></i>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="glass-card dashboard-card">
+
+      <div class="d-flex justify-content-between align-items-center">
+
+        <div>
+          <div class="card-title-modern">
+            Allocation Engine
+          </div>
+
+          <div class="card-value">
+            ACTIVE
+          </div>
+        </div>
+
+        <div class="card-icon text-success">
+          <i class="bi bi-cpu-fill"></i>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="glass-card dashboard-card">
+
+      <div class="d-flex justify-content-between align-items-center">
+
+        <div>
+          <div class="card-title-modern">
+            System State
+          </div>
+
+          <div class="card-value">
+            SAFE
+          </div>
+        </div>
+
+        <div class="card-icon text-warning">
+          <i class="bi bi-shield-check"></i>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<div class="glass-card p-5 text-center">
+
+  <h2 class="mb-3">
+    Smart Banking Dashboard
+  </h2>
+
+  <p class="text-muted-light mb-4">
+    Analyze loan requests, monitor reserve pressure,
+    visualize safe sequences and manage intelligent
+    resource allocation workflows.
+  </p>
+
+  <div class="d-flex flex-wrap justify-content-center gap-3">
+
+    <a class="btn btn-primary btn-lg"
+       href="{{ url_for('loan_application') }}">
+
+      <i class="bi bi-cash-stack"></i>
+      Apply for Loan
+    </a>
+
+    <a class="btn btn-outline-light btn-lg"
+       href="{{ url_for('requests_page') }}">
+
+      <i class="bi bi-clock-history"></i>
+      View Requests
+    </a>
+
+    <a class="btn btn-success btn-lg"
+       href="{{ url_for('analysis') }}">
+
+      <i class="bi bi-bar-chart-line-fill"></i>
+      Analytics
+    </a>
+
+  </div>
+
+</div>
+
 {% endblock %}

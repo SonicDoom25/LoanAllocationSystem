@@ -1,0 +1,8 @@
+venv/
+**pycache**/
+*.pyc
+instance/
+.env
+loan_data.db
+.vscode/
+.idea/
